@@ -141,6 +141,16 @@ Charts are saved to `outputs/`.
 
 Point `ASK_MY_DATA_DATASET` at your dataset, then replace the tables, metric definitions and traps in `prompts/system.md`. The safety layer works on any BigQuery dataset. The real work, as in this project, is profiling the data first and writing down what can go wrong.
 
+## Second dataset: TTC bus delays (real, messy data)
+
+[`ttc/`](ttc/) applies the same process to **107,349 real TTC bus delay reports** from Toronto's open data portal (Jan 2025 to Sep 2026): load, profile, clean, validate, then let the agent answer questions.
+
+- **Cleaning:** removed 429 duplicates, merged 591 route-name spellings into 274 routes, fixed 130 wrong weekdays, gave four codes all called "OTHER" unique labels, and flagged zero-minute, 3-hour+ and placeholder delays instead of silently dropping them.
+- **Validation:** 18 SQL checks prove the clean table still adds up to the raw upload (same rows after de-duplication, same delay minutes, same days); all pass.
+- **A fix that was reversed:** filling missing routes from the same bus's other trips looked reasonable, but a spot check showed every such report was at a bus garage, so the rows were left as missing.
+
+See the [TTC write-up](ttc/README.md), [data dictionary](ttc/data_dictionary.md) and [SQL](ttc/sql/).
+
 ## Limitations
 
 - The traps are specific to this dataset; a new dataset needs its own profiling.
